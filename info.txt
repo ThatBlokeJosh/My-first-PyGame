@@ -1,0 +1,5 @@
+Hi i'm Josh, i'm learning PyGame and Python in general and i made my first simple 2D game and i'm quite proud of it.
+REQUIREMENTS: PyGame module
+CONTROLS: WASD to move, SPACE to pause the game for 5 seconds and any mouse button for firing.
+Basicaly just kill the enemy ships and don't let them hit the edge. Every time they hit the edge you will go down a level and at 0 levels it's game over. You gain levels by getting 10 kills and every tenth level enenmy get faster.
+PS: Sorry about the variable names originaly should have been just a tutorial for myself.
