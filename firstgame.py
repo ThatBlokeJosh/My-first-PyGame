@@ -108,12 +108,12 @@ def main():
     clock = pygame.time.Clock()
     kills = 0
     total_kills = 0
-    lives = 3
-    if max_projectiles > 5:
-        max_projectiles -= 1
+    lives = 50
     music.play(1000000)
     damage = 1
     projectile_regen = 1
+    if max_projectiles > 5:
+        max_projectiles -= 1
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -185,8 +185,6 @@ def main():
             damage = 5
         if lives >= 50:
             damage = 6
-            max_projectiles += 1
-            projectile_regen = 2
         if lives >= 60:
             damage = 7
         if lives >= 70:
@@ -197,8 +195,6 @@ def main():
             damage = 10
         if lives >= 100:
             damage = 11
-            max_projectiles += 1
-            projectile_regen = 3
 
         WIN.blit(surface, surface_rect)
         pause_text = 'PAUSED'
