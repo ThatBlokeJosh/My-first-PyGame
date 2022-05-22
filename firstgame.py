@@ -20,6 +20,10 @@ surface_rect = surface.get_rect(center=(500, 250))
 projectile_image = pygame.transform.scale(pygame.image.load(
         os.path.join('Assets', 'projectile.png')), (50, 35)).convert_alpha()
 music = pygame.mixer.Sound(os.path.join('Assets', 'music.mp3'))
+fire_sound = pygame.mixer.Sound(os.path.join('Assets', 'firing.mp3'))
+hit_sound = pygame.mixer.Sound(os.path.join('Assets', 'hit.mp3'))
+one_up = pygame.mixer.Sound(os.path.join('Assets', '1up.mp3'))
+game_over_sound = pygame.mixer.Sound(os.path.join('Assets', 'gameover.mp3'))
 animation_image = pygame.transform.rotate(pygame.transform.scale(pygame.image.load(os.path.join(
     'Assets', 'animation.png')), (70, 50)).convert_alpha(), 270)
 
@@ -38,31 +42,41 @@ def draw(
     enemy_vel = 3
     if lives >= 10:
         enemy_vel += 1
-    elif lives >= 20:
+
+    if lives >= 20:
         enemy_vel += 1
-    elif lives >= 30:
+
+    if lives >= 30:
         enemy_vel += 1
-    elif lives >= 40:
+
+    if lives >= 40:
         enemy_vel += 1
-    elif lives >= 50:
+
+    if lives >= 50:
         enemy_vel += 1
-    elif lives >= 60:
+
+    if lives >= 60:
         enemy_vel += 1
-    elif lives >= 70:
+
+    if lives >= 70:
         enemy_vel += 1
-    elif lives >= 80:
+
+    if lives >= 80:
         enemy_vel += 1
-    elif lives >= 90:
+
+    if lives >= 90:
         enemy_vel += 1
-    elif lives >= 100:
+
+    if lives >= 100:
         enemy_vel += 1
+
     for animation in animation_amount:
         WIN.blit(animation_image, animation)
     animation.x -= enemy_vel
     for animation2 in animation_amount2:
         WIN.blit(animation_image, animation2)
-
     animation2.x -= enemy_vel
+    print(enemy_vel)
 
     projectile_text = font.render('Bullets: ' + str(max_projectiles), True, WHITE)
     WIN.blit(projectile_text, (10, 10))
@@ -82,7 +96,6 @@ def game_over(game_over_text):
 
 
 def main():
-
     run = True
     projectile_amount = []
     animation_amount = []
@@ -98,22 +111,47 @@ def main():
     lives = 3
     if max_projectiles > 5:
         max_projectiles -= 1
+    music.play(1000000)
+    damage = 1
+    if lives >= 10:
+        damage += 1
+    if lives >= 20:
+        damage += 1
+    if lives >= 30:
+        damage += 1
+    if lives >= 40:
+        damage += 1
+    if lives >= 50:
+        damage += 1
+    if lives >= 60:
+        damage += 1
+    if lives >= 70:
+        damage += 1
+    if lives >= 80:
+        damage += 1
+    if lives >= 90:
+        damage += 1
+    if lives >= 100:
+        damage += 1
 
     while run:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                print(total_kills)
                 run = False
                 pygame.quit()
                 exit()
 
             if event.type == pygame.MOUSEBUTTONDOWN and max_projectiles > 0:
+                fire_sound.play()
                 projectile = pygame.Rect(
                     surface_rect.x + surface_rect.width, surface_rect.y + surface_rect.height//2 - 17, 50, 35)
                 projectile_amount.append(projectile)
                 max_projectiles -= 1
 
             if event.type == hit:
+                hit_sound.play()
                 animation_amount.remove(animation)
                 animation.x = 1000
                 animation_amount.append(animation)
@@ -122,20 +160,13 @@ def main():
                 total_kills += 1
 
             if event.type == hit2:
+                hit_sound.play()
                 animation_amount2.remove(animation2)
                 animation2.x = 1000
                 animation_amount2.append(animation2)
                 max_projectiles += 1
                 kills += 1
                 total_kills += 1
-
-        if animation.x < 0:
-            animation.x += 900
-            lives -= 1
-
-        if animation2.x < 0:
-            animation2.x += 900
-            lives -= 1
 
         WIN.blit(background, (0, 0))
 
@@ -157,6 +188,13 @@ def main():
 
         for projectile in projectile_amount:
             projectile.x += 5
+        if animation.x < 0:
+            animation.x += 900
+            lives -= damage
+
+        if animation2.x < 0:
+            animation2.x += 900
+            lives -= damage
 
         WIN.blit(surface, surface_rect)
         pause_text = 'PAUSED'
@@ -179,11 +217,13 @@ def main():
             pygame.time.delay(5000)
 
         if kills >= 10:
+            one_up.play()
             lives += 1
             kills -= 10
         game_over_text = 'GAME OVER' \
                          ' YOU GOT ' + str(total_kills) + ' kills.'
         if lives <= 0:
+            game_over_sound.play()
             game_over(game_over_text)
             break
         clock.tick(60)
