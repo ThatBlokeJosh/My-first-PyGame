@@ -176,25 +176,25 @@ def main():
             animation2.x += 900
             lives -= damage
         if lives >= 10:
-            damage = 2
+            damage = 1
         if lives >= 20:
-            damage = 3
+            damage = 2
         if lives >= 30:
-            damage = 4
+            damage = 2
         if lives >= 40:
-            damage = 5
+            damage = 3
         if lives >= 50:
-            damage = 6
+            damage = 3
         if lives >= 60:
-            damage = 7
+            damage = 4
         if lives >= 70:
-            damage = 8
+            damage = 4
         if lives >= 80:
-            damage = 9
+            damage = 5
         if lives >= 90:
-            damage = 10
+            damage = 5
         if lives >= 100:
-            damage = 11
+            damage = 6
 
         WIN.blit(surface, surface_rect)
         pause_text = 'PAUSED'
