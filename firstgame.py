@@ -16,6 +16,8 @@ background = pygame.transform.scale(pygame.image.load(
 surface_image = pygame.image.load(os.path.join('Assets', 'funny.png')).convert_alpha()
 surface = pygame.transform.rotate(pygame.transform.scale(surface_image, (70, 50)), 90)
 surface_rect = surface.get_rect(center=(500, 250))
+surface_screen = pygame.transform.rotate(pygame.transform.scale(surface_image, (150, 100)), 90)
+surface_screen_rect = surface_screen.get_rect(center=(200, 100))
 
 projectile_image = pygame.transform.scale(pygame.image.load(
         os.path.join('Assets', 'projectile.png')), (50, 35)).convert_alpha()
@@ -31,7 +33,7 @@ hit = pygame.USEREVENT + 1
 hit2 = pygame.USEREVENT + 2
 boss_hit = pygame.USEREVENT + 3
 font = pygame.font.SysFont('arialnova', 40)
-game_over_font = pygame.font.SysFont('arialnova', 80)
+screen_font = pygame.font.SysFont('arialnova', 100)
 pause_font = pygame.font.SysFont('arialnova', 80)
 VEL = 5
 
@@ -87,16 +89,13 @@ def draw(
     pygame.display.update()
 
 
-def game_over(game_over_text, kills_text, restart_text):
-    game_over_text_render = game_over_font.render(game_over_text, True, WHITE)
-    WIN.blit(game_over_text_render, (
-        WIDTH//2 - game_over_text_render.get_width()//2, HEIGHT//2 - game_over_text_render.get_height()//2))
-    kills_text_render = game_over_font.render(kills_text, True, WHITE)
-    WIN.blit(kills_text_render, (WIDTH//2 - game_over_text_render.get_width()//2, 300 - kills_text_render.get_height()//2))
-    restart_text_render = game_over_font.render(restart_text, True, WHITE)
-    WIN.blit(restart_text_render, (
-        WIDTH//2 - game_over_text_render.get_width()//2, 350 - kills_text_render.get_height()//2))
-
+def draw_text(screen_text, kills_text):
+    screen_text_render = screen_font.render(screen_text, True, WHITE)
+    kills_text_render = font.render(kills_text, True, WHITE)
+    WIN.blit(
+        screen_text_render, (
+            WIDTH//2 - screen_text_render.get_width()//2, HEIGHT//2 - screen_text_render.get_height()//2))
+    WIN.blit(kills_text_render, (50, 450))
     pygame.display.update()
 
 
@@ -119,7 +118,7 @@ def main():
     projectile_regen = 1
     if max_projectiles > 5:
         max_projectiles -= 1
-    game_active = True
+    game_active = False
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -153,7 +152,7 @@ def main():
                 kills += 1
                 total_kills += 1
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q and game_active is not True:
+                if event.key == pygame.K_SPACE and game_active is not True:
                     game_active = True
                     animation.x = 900
                     animation2.x = 900
@@ -226,7 +225,7 @@ def main():
                 surface_rect.y -= VEL
             if keys_pressed[pygame.K_s] and surface_rect.y + VEL + surface_rect.height < HEIGHT - 15:
                 surface_rect.y += VEL
-            if keys_pressed[pygame.K_SPACE]:
+            if keys_pressed[pygame.K_q]:
                 pause_text_render = pause_font.render(pause_text, True, WHITE)
                 WIN.blit(pause_text_render, (
                     WIDTH // 2 - pause_text_render.get_width() // 2,
@@ -243,14 +242,15 @@ def main():
             draw(
                 animation, animation_amount, animation2, animation_amount2, max_projectiles, kills,
                 lives)
+
         else:
             WIN.blit(background, (0, 0))
-            game_over_text = 'GAME OVER '
-            kills_text = 'KILLS:  ' + str(total_kills)
-            restart_text = 'Press Q to restart'
-            game_over(game_over_text, kills_text, restart_text)
-            print(animation.x)
-
+            screen_text = 'PRESS SPACE TO START'
+            draw_text(screen_text, kills_text='Kills last game: ' + str(total_kills))
+            WIN.blit(surface_screen, surface_screen_rect)
+            surface_screen_rect.x += 7
+            if surface_screen_rect.x > 1000:
+                surface_screen_rect.x = -100
         pygame.display.update()
         clock.tick(60)
 
