@@ -108,7 +108,7 @@ def main():
     clock = pygame.time.Clock()
     kills = 0
     total_kills = 0
-    lives = 50
+    lives = 3
     music.play(1000000)
     damage = 1
     projectile_regen = 1
