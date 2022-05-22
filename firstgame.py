@@ -40,6 +40,7 @@ def draw(
         animation, animation_amount, animation2, animation_amount2, max_projectiles, kills,
         lives):
     enemy_vel = 3
+
     if lives >= 10:
         enemy_vel += 1
 
@@ -76,7 +77,6 @@ def draw(
     for animation2 in animation_amount2:
         WIN.blit(animation_image, animation2)
     animation2.x -= enemy_vel
-    print(enemy_vel)
 
     projectile_text = font.render('Bullets: ' + str(max_projectiles), True, WHITE)
     WIN.blit(projectile_text, (10, 10))
@@ -113,29 +113,8 @@ def main():
         max_projectiles -= 1
     music.play(1000000)
     damage = 1
-    if lives >= 10:
-        damage += 1
-    if lives >= 20:
-        damage += 1
-    if lives >= 30:
-        damage += 1
-    if lives >= 40:
-        damage += 1
-    if lives >= 50:
-        damage += 1
-    if lives >= 60:
-        damage += 1
-    if lives >= 70:
-        damage += 1
-    if lives >= 80:
-        damage += 1
-    if lives >= 90:
-        damage += 1
-    if lives >= 100:
-        damage += 1
-
+    projectile_regen = 1
     while run:
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 print(total_kills)
@@ -148,14 +127,14 @@ def main():
                 projectile = pygame.Rect(
                     surface_rect.x + surface_rect.width, surface_rect.y + surface_rect.height//2 - 17, 50, 35)
                 projectile_amount.append(projectile)
-                max_projectiles -= 1
+                max_projectiles -= projectile_regen
 
             if event.type == hit:
                 hit_sound.play()
                 animation_amount.remove(animation)
                 animation.x = 1000
                 animation_amount.append(animation)
-                max_projectiles += 1
+                max_projectiles += projectile_regen
                 kills += 1
                 total_kills += 1
 
@@ -164,7 +143,7 @@ def main():
                 animation_amount2.remove(animation2)
                 animation2.x = 1000
                 animation_amount2.append(animation2)
-                max_projectiles += 1
+                max_projectiles += projectile_regen
                 kills += 1
                 total_kills += 1
 
@@ -181,13 +160,14 @@ def main():
             if projectile.x > WIDTH:
                 try:
                     projectile_amount.remove(projectile)
-                    max_projectiles += 1
+                    max_projectiles += projectile_regen
                 except ValueError:
                     projectile_amount.append(projectile)
                     max_projectiles -= 1
 
         for projectile in projectile_amount:
             projectile.x += 5
+
         if animation.x < 0:
             animation.x += 900
             lives -= damage
@@ -195,6 +175,30 @@ def main():
         if animation2.x < 0:
             animation2.x += 900
             lives -= damage
+        if lives >= 10:
+            damage = 2
+        if lives >= 20:
+            damage = 3
+        if lives >= 30:
+            damage = 4
+        if lives >= 40:
+            damage = 5
+        if lives >= 50:
+            damage = 6
+            max_projectiles += 1
+            projectile_regen = 2
+        if lives >= 60:
+            damage = 7
+        if lives >= 70:
+            damage = 8
+        if lives >= 80:
+            damage = 9
+        if lives >= 90:
+            damage = 10
+        if lives >= 100:
+            damage = 11
+            max_projectiles += 1
+            projectile_regen = 3
 
         WIN.blit(surface, surface_rect)
         pause_text = 'PAUSED'
