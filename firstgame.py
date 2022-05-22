@@ -87,12 +87,17 @@ def draw(
     pygame.display.update()
 
 
-def game_over(game_over_text):
+def game_over(game_over_text, kills_text, restart_text):
     game_over_text_render = game_over_font.render(game_over_text, True, WHITE)
     WIN.blit(game_over_text_render, (
         WIDTH//2 - game_over_text_render.get_width()//2, HEIGHT//2 - game_over_text_render.get_height()//2))
+    kills_text_render = game_over_font.render(kills_text, True, WHITE)
+    WIN.blit(kills_text_render, (WIDTH//2 - game_over_text_render.get_width()//2, 300 - kills_text_render.get_height()//2))
+    restart_text_render = game_over_font.render(restart_text, True, WHITE)
+    WIN.blit(restart_text_render, (
+        WIDTH//2 - game_over_text_render.get_width()//2, 350 - kills_text_render.get_height()//2))
+
     pygame.display.update()
-    pygame.time.delay(5000)
 
 
 def main():
@@ -114,6 +119,7 @@ def main():
     projectile_regen = 1
     if max_projectiles > 5:
         max_projectiles -= 1
+    game_active = True
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -146,93 +152,109 @@ def main():
                 max_projectiles += projectile_regen
                 kills += 1
                 total_kills += 1
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q and game_active is not True:
+                    game_active = True
+                    animation.x = 900
+                    animation2.x = 900
+                    surface_rect.x = 500
+                    surface_rect.y = 250
+                    lives = 3
+                    total_kills = 0
+                    kills = 0
+                    max_projectiles = 5
 
-        WIN.blit(background, (0, 0))
+        if game_active:
+            WIN.blit(background, (0, 0))
 
-        for projectile in projectile_amount:
-            WIN.blit(projectile_image, projectile)
-            if animation.colliderect(projectile):
-                pygame.event.post(pygame.event.Event(hit))
-                projectile_amount.remove(projectile)
-            if animation2.colliderect(projectile):
-                pygame.event.post(pygame.event.Event(hit2))
-                projectile_amount.remove(projectile)
-            if projectile.x > WIDTH:
-                try:
+            for projectile in projectile_amount:
+                WIN.blit(projectile_image, projectile)
+                if animation.colliderect(projectile):
+                    pygame.event.post(pygame.event.Event(hit))
                     projectile_amount.remove(projectile)
-                    max_projectiles += projectile_regen
-                except ValueError:
-                    projectile_amount.append(projectile)
-                    max_projectiles -= 1
+                if animation2.colliderect(projectile):
+                    pygame.event.post(pygame.event.Event(hit2))
+                    projectile_amount.remove(projectile)
+                if projectile.x > WIDTH:
+                    try:
+                        projectile_amount.remove(projectile)
+                        max_projectiles += projectile_regen
+                    except ValueError:
+                        projectile_amount.append(projectile)
+                        max_projectiles -= 1
 
-        for projectile in projectile_amount:
-            projectile.x += 5
+            for projectile in projectile_amount:
+                projectile.x += 5
 
-        if animation.x < 0:
-            animation.x += 900
-            lives -= damage
+            if animation.x < 0:
+                animation.x += 900
+                lives -= damage
 
-        if animation2.x < 0:
-            animation2.x += 900
-            lives -= damage
-        if lives >= 10:
-            damage = 1
-        if lives >= 20:
-            damage = 2
-        if lives >= 30:
-            damage = 2
-        if lives >= 40:
-            damage = 3
-        if lives >= 50:
-            damage = 3
-        if lives >= 60:
-            damage = 4
-        if lives >= 70:
-            damage = 4
-        if lives >= 80:
-            damage = 5
-        if lives >= 90:
-            damage = 5
-        if lives >= 100:
-            damage = 6
+            if animation2.x < 0:
+                animation2.x += 900
+                lives -= damage
+            if lives >= 10:
+                damage = 1
+            if lives >= 20:
+                damage = 2
+            if lives >= 30:
+                damage = 2
+            if lives >= 40:
+                damage = 3
+            if lives >= 50:
+                damage = 3
+            if lives >= 60:
+                damage = 4
+            if lives >= 70:
+                damage = 4
+            if lives >= 80:
+                damage = 5
+            if lives >= 90:
+                damage = 5
+            if lives >= 100:
+                damage = 6
 
-        WIN.blit(surface, surface_rect)
-        pause_text = 'PAUSED'
-        keys_pressed = pygame.key.get_pressed()
+            WIN.blit(surface, surface_rect)
+            pause_text = 'PAUSED'
+            keys_pressed = pygame.key.get_pressed()
 
-        if keys_pressed[pygame.K_a] and surface_rect.x - VEL > 0:
-            surface_rect.x -= VEL
-        if keys_pressed[pygame.K_d] and surface_rect.x + VEL + surface_rect.width < WIDTH:
-            surface_rect.x += VEL
-        if keys_pressed[pygame.K_w] and surface_rect.y - VEL > 0:
-            surface_rect.y -= VEL
-        if keys_pressed[pygame.K_s] and surface_rect.y + VEL + surface_rect.height < HEIGHT - 15:
-            surface_rect.y += VEL
-        if keys_pressed[pygame.K_SPACE]:
-            pause_text_render = pause_font.render(pause_text, True, WHITE)
-            WIN.blit(pause_text_render, (
-                WIDTH // 2 - pause_text_render.get_width() // 2,
-                HEIGHT // 2 - pause_text_render.get_height() // 2))
-            pygame.display.update()
-            pygame.time.delay(5000)
+            if keys_pressed[pygame.K_a] and surface_rect.x - VEL > 0:
+                surface_rect.x -= VEL
+            if keys_pressed[pygame.K_d] and surface_rect.x + VEL + surface_rect.width < WIDTH:
+                surface_rect.x += VEL
+            if keys_pressed[pygame.K_w] and surface_rect.y - VEL > 0:
+                surface_rect.y -= VEL
+            if keys_pressed[pygame.K_s] and surface_rect.y + VEL + surface_rect.height < HEIGHT - 15:
+                surface_rect.y += VEL
+            if keys_pressed[pygame.K_SPACE]:
+                pause_text_render = pause_font.render(pause_text, True, WHITE)
+                WIN.blit(pause_text_render, (
+                    WIDTH // 2 - pause_text_render.get_width() // 2,
+                    HEIGHT // 2 - pause_text_render.get_height() // 2))
+                pygame.display.update()
+                pygame.time.delay(5000)
 
-        if kills >= 10:
-            one_up.play()
-            lives += 1
-            kills -= 10
-        game_over_text = 'GAME OVER' \
-                         ' YOU GOT ' + str(total_kills) + ' kills.'
-        if lives <= 0:
-            game_over_sound.play()
-            game_over(game_over_text)
-            break
+            if kills >= 10:
+                one_up.play()
+                lives += 1
+                kills -= 10
+            if lives <= 0:
+                game_active = False
+            draw(
+                animation, animation_amount, animation2, animation_amount2, max_projectiles, kills,
+                lives)
+        else:
+            WIN.blit(background, (0, 0))
+            game_over_text = 'GAME OVER '
+            kills_text = 'KILLS:  ' + str(total_kills)
+            restart_text = 'Press Q to restart'
+            game_over(game_over_text, kills_text, restart_text)
+            print(animation.x)
+
+        pygame.display.update()
         clock.tick(60)
-        draw(
-            animation, animation_amount, animation2, animation_amount2, max_projectiles, kills,
-            lives)
 
-
-main()
+    main()
 
 
 if __name__ == '__main__':
