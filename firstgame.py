@@ -17,7 +17,7 @@ surface_image = pygame.image.load(os.path.join('Assets', 'funny.png')).convert_a
 surface = pygame.transform.rotate(pygame.transform.scale(surface_image, (70, 50)), 90)
 surface_rect = surface.get_rect(center=(500, 250))
 surface_screen = pygame.transform.rotate(pygame.transform.scale(surface_image, (150, 100)), 90)
-surface_screen_rect = surface_screen.get_rect(center=(200, 100))
+surface_screen_rect = surface_screen.get_rect(center=(-100, 100))
 
 projectile_image = pygame.transform.scale(pygame.image.load(
         os.path.join('Assets', 'projectile.png')), (50, 35)).convert_alpha()
@@ -42,36 +42,35 @@ def draw(
         animation, animation_amount, animation2, animation_amount2, max_projectiles, kills,
         lives):
     enemy_vel = 3
-
     if lives >= 10:
-        enemy_vel += 1
+        enemy_vel = 4
 
     if lives >= 20:
-        enemy_vel += 1
+        enemy_vel = 5
 
     if lives >= 30:
-        enemy_vel += 1
+        enemy_vel = 6
 
     if lives >= 40:
-        enemy_vel += 1
+        enemy_vel = 7
 
     if lives >= 50:
-        enemy_vel += 1
+        enemy_vel = 8
 
     if lives >= 60:
-        enemy_vel += 1
+        enemy_vel = 9
 
     if lives >= 70:
-        enemy_vel += 1
+        enemy_vel = 10
 
     if lives >= 80:
-        enemy_vel += 1
+        enemy_vel = 11
 
     if lives >= 90:
-        enemy_vel += 1
+        enemy_vel = 12
 
     if lives >= 100:
-        enemy_vel += 1
+        enemy_vel = 13
 
     for animation in animation_amount:
         WIN.blit(animation_image, animation)
@@ -119,6 +118,7 @@ def main():
     if max_projectiles > 5:
         max_projectiles -= 1
     game_active = False
+    game_paused = False
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -162,6 +162,14 @@ def main():
                     total_kills = 0
                     kills = 0
                     max_projectiles = 5
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    if game_active:
+                        game_active = False
+                        game_paused = True
+                    else:
+                        game_active = True
+                        game_paused = False
 
         if game_active:
             WIN.blit(background, (0, 0))
@@ -214,7 +222,7 @@ def main():
                 damage = 6
 
             WIN.blit(surface, surface_rect)
-            pause_text = 'PAUSED'
+
             keys_pressed = pygame.key.get_pressed()
 
             if keys_pressed[pygame.K_a] and surface_rect.x - VEL > 0:
@@ -225,13 +233,6 @@ def main():
                 surface_rect.y -= VEL
             if keys_pressed[pygame.K_s] and surface_rect.y + VEL + surface_rect.height < HEIGHT - 15:
                 surface_rect.y += VEL
-            if keys_pressed[pygame.K_q]:
-                pause_text_render = pause_font.render(pause_text, True, WHITE)
-                WIN.blit(pause_text_render, (
-                    WIDTH // 2 - pause_text_render.get_width() // 2,
-                    HEIGHT // 2 - pause_text_render.get_height() // 2))
-                pygame.display.update()
-                pygame.time.delay(5000)
 
             if kills >= 10:
                 one_up.play()
@@ -244,13 +245,22 @@ def main():
                 lives)
 
         else:
-            WIN.blit(background, (0, 0))
-            screen_text = 'PRESS SPACE TO START'
-            draw_text(screen_text, kills_text='Kills last game: ' + str(total_kills))
-            WIN.blit(surface_screen, surface_screen_rect)
-            surface_screen_rect.x += 7
-            if surface_screen_rect.x > 1000:
-                surface_screen_rect.x = -100
+            if game_paused:
+                WIN.blit(background, (0, 0))
+                pause_text = 'Paused'
+                pause_text_render = pause_font.render(pause_text, True, WHITE)
+                WIN.blit(pause_text_render, (
+                    WIDTH // 2 - pause_text_render.get_width() // 2,
+                    HEIGHT // 2 - pause_text_render.get_height() // 2))
+            if game_paused is not True:
+                WIN.blit(background, (0, 0))
+                WIN.blit(surface_screen, surface_screen_rect)
+                surface_screen_rect.x += 7
+                if surface_screen_rect.x > 1000:
+                    surface_screen_rect.x = -100
+                screen_text = 'PRESS SPACE TO START'
+                draw_text(screen_text, kills_text='Kills last game: ' + str(total_kills))
+
         pygame.display.update()
         clock.tick(60)
 
